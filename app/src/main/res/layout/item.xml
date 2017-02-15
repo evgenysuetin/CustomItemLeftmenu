@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<com.evgeny.customitemleftmenu.CustomItemView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_margin="5dp"
+    android:id="@+id/list_item"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <com.evgeny.customitemleftmenu.CustomItemView
-        android:background="@android:color/white"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:padding="10dp"
-        custom:radius = "20"
-        custom:has_status="true"
-        custom:textWidth="2sp"/>
-</LinearLayout>
+    android:layout_height="50dp"
+    android:background="@android:color/transparent"
+    android:paddingTop="5dp"
+    custom:has_status="true"
+    custom:hightlightBackground="@android:color/white"
+    custom:noHightlightBackground="@android:color/transparent"
+    custom:radius="20"
+    custom:textWidth="5sp" />

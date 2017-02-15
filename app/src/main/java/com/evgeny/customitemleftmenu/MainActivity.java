@@ -8,12 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final Random random = new Random(0);
 
         RecyclerView rec = (RecyclerView) findViewById(R.id.rec);
         rec.setLayoutManager(new LinearLayoutManager(this));
@@ -22,7 +25,13 @@ public class MainActivity extends AppCompatActivity {
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                 View v = inflater.inflate(R.layout.item,parent,false);
-
+                CustomItemView item = (CustomItemView) v.findViewById(R.id.list_item);
+                item.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        v.setSelected(!v.isSelected());
+                    }
+                });
                 RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(v) {
                 };
                 return holder;
@@ -30,7 +39,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
+                if(position%2>0)
+                ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setText(random.nextLong()+"");
+                else
+                    ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setText(random.nextInt(1000)+"");
+                ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setStatus(random.nextInt()%3);
+                ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setMention(random.nextInt()%99);
             }
 
             @Override

@@ -3,6 +3,8 @@
     <declare-styleable name="CustomItemView">
         <attr name="has_status" format="boolean"/>
         <attr name="textWidth" format="dimension"/>
+        <attr name="hightlightBackground" format="color"/>
+        <attr name="noHightlightBackground" format="color"/>
         <attr name="radius" format="float"/>
     </declare-styleable>
 </resources>
