@@ -39,10 +39,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-                if(position%2>0)
-                ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setText(random.nextLong()+"");
-                else
-                    ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setText(random.nextInt(1000)+"");
+                if(position%2>0) {
+                    ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setText(random.nextLong() + "");
+                    ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setBold(true);
+                } else {
+                    String text = "";
+                    for (int i = 0; i < position; i++) {
+                        text += "9";
+                    }
+                    ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setText(text);
+                    ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setBold(false);
+                }
                 ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setStatus(random.nextInt()%3);
                 ((CustomItemView) holder.itemView.findViewById(R.id.list_item)).setMention(random.nextInt()%99);
             }

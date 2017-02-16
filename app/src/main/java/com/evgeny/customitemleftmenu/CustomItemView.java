@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -34,7 +35,9 @@ public class CustomItemView extends View {
     private float mTextRadius = 10f;
 
     private Paint mTextPaintWhite;
+    private Paint mTextPaintBoldWhite;
     private Paint mTextPaintBlack;
+    private Paint mTextPaintBoldBlack;
 
 
     private Paint mHighlightRechtangle;
@@ -45,11 +48,15 @@ public class CustomItemView extends View {
 
     private String mText = "TEST TEST TEST";
     private int mMention;
+    private boolean isBold = false;
+    int m_padding = 15;
 
     private Path path = new Path();
     private Paint mStatusOfflinePaint;
     private Paint mStatusAwayPaint;
     private Paint mStatusOnlinePaint;
+
+
 
     public CustomItemView(Context context) {
         super(context);
@@ -97,10 +104,24 @@ public class CustomItemView extends View {
         mTextPaintWhite.setColor(Color.WHITE);
         mTextPaintWhite.setTextSize(convertSpToPixels(mTextWidth, getContext()));
 
+        mTextPaintBoldWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaintBoldWhite.setTextAlign(Paint.Align.LEFT);
+        mTextPaintBoldWhite.setColor(Color.WHITE);
+        mTextPaintBoldWhite.setTextSize(convertSpToPixels(mTextWidth, getContext()));
+        mTextPaintBoldWhite.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD));
+
         mTextPaintBlack = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaintBlack.setTextAlign(Paint.Align.LEFT);
         mTextPaintBlack.setColor(Color.BLACK);
         mTextPaintBlack.setTextSize(convertSpToPixels(mTextWidth, getContext()));
+
+        mTextPaintBoldBlack = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaintBoldBlack.setTextAlign(Paint.Align.LEFT);
+        mTextPaintBoldBlack.setColor(Color.BLACK);
+        mTextPaintBoldBlack.setTextSize(convertSpToPixels(mTextWidth, getContext()));
+        mTextPaintBoldBlack.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD));
+
+
 
         mHighlightRechtangle = new Paint(Paint.ANTI_ALIAS_FLAG);
         mHighlightRechtangle.setStyle(Paint.Style.FILL);
@@ -152,17 +173,17 @@ public class CustomItemView extends View {
         mTextPaintBlack.getTextBounds(DOTS, 0, DOTS.length(), textRect);
         int dots_width = textRect.width();
 
-        int m_padding = 5;
+
         int c_width = getMeasuredWidth();
-        int c_height = getMeasuredHeight();
+        //int c_height = getMeasuredHeight();
 
         mTextPaintBlack.getTextBounds(mText, 0, mText.length(), t_rect);
         int t_width = t_rect.width();
-        int t_height = t_rect.height();
+        //int t_height = t_rect.height();
 
         mTextPaintBlack.getTextBounds(t_mention, 0, t_mention.length(), m_rect);
         int m_width = m_rect.width();
-        int m_height = m_rect.height();
+        //int m_height = m_rect.height();
 
         float max_t_width = c_width - m_padding * 5 - mTextRadius * 2 - m_width;
         float maxt_t_width_with_dots = max_t_width - dots_width;
@@ -180,8 +201,6 @@ public class CustomItemView extends View {
         } else {
             endIndex = -1;
         }
-        int test = 1;
-
         if (endIndex != -1) {
             endIndex += DOTS.length();
         }
@@ -194,24 +213,36 @@ public class CustomItemView extends View {
         Log.d(TAG, "onDraw: isSelected() = " + isSelected() + "text = " + getText());
         drawRoundRect(canvas);
         drawText(canvas);
+        drawMention(canvas);
         drawStatus(canvas);
 
+    }
+
+    private void drawMention(Canvas canvas) {
+        Paint paint = getTextPaint();
+        canvas.getClipBounds(textRect);
+        int cHeight = textRect.height();
+        int cWidth = textRect.width();
+        paint.getTextBounds(t_mention, 0, t_mention.length(), textRect);
+        float x;
+        float y;
+        y = cHeight / 2f + textRect.height() / 2f - textRect.bottom;
+        x = cWidth - m_padding - textRect.width();
+        canvas.drawText(t_mention,
+                0,
+                t_mention.length(),
+                x,
+                y,
+                paint);
     }
 
     private Rect textRect = new Rect();
 
     private void drawText(Canvas canvas) {
+        Paint paint = getTextPaint();
         canvas.getClipBounds(textRect);
         int cHeight = textRect.height();
-        if (isSelected()) {
-            mTextPaintBlack.getTextBounds(mText, 0, (endIndex != -1) ? endIndex : mText.length(), textRect);
-        } else {
-            try {
-                mTextPaintWhite.getTextBounds(mText, 0, (endIndex != -1) ? endIndex : mText.length(), textRect);
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-        }
+        paint.getTextBounds(mText, 0, (endIndex != -1) ? endIndex : mText.length(), textRect);
         float x;
         float y;
         if (mHasStatus) {
@@ -221,21 +252,39 @@ public class CustomItemView extends View {
         }
         y = cHeight / 2f + textRect.height() / 2f - textRect.bottom;
         if (endIndex != -1) {
-            canvas.drawText(mText.substring(0,endIndex-DOTS.length()) + DOTS,
+            canvas.drawText(mText.substring(0, endIndex - DOTS.length()) + DOTS,
                     0,
                     endIndex,
                     x,
                     y,
-                    isSelected() ? mTextPaintBlack : mTextPaintWhite);
+                    paint);
         } else {
             canvas.drawText(mText,
                     0,
                     mText.length(),
                     x,
                     y,
-                    isSelected() ? mTextPaintBlack : mTextPaintWhite);
+                    paint);
         }
         //path.reset();
+    }
+
+    private Paint getTextPaint() {
+        Paint paint;
+        if(isSelected()){
+            if(isBold()){
+                paint = mTextPaintBoldBlack;
+            } else {
+                paint = mTextPaintBlack;
+            }
+        } else {
+            if(isBold()){
+                paint = mTextPaintBoldWhite;
+            } else {
+                paint = mTextPaintWhite;
+            }
+        }
+        return paint;
     }
 
     private void drawRoundRect(Canvas canvas) {
@@ -323,8 +372,18 @@ public class CustomItemView extends View {
         invalidate();
     }
 
+    public boolean isBold() {
+        return isBold;
+    }
+
+    public void setBold(boolean bold) {
+        isBold = bold;
+        invalidate();
+    }
+
     public static int convertSpToPixels(float sp, Context context) {
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
         return px;
     }
+
 }
